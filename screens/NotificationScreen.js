@@ -57,7 +57,11 @@ export default class NotificationScreen extends Component {
     return (
       <View style={styles.container}>
         <View style={{ flex: 0.1 }}>
-          <AppHeader title="Notifications" navigation={this.props.navigation} />
+          <AppHeader
+            title="Notifications"
+            navigation={this.props.navigation}
+            removeBell
+          />
         </View>
         <View style={{ flex: 0.9 }}>
           {this.state.allNotifications.length === 0 ? (
