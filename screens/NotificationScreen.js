@@ -3,6 +3,7 @@ import { StyleSheet, View, FlatList, Text } from "react-native";
 import { ListItem, Icon } from "react-native-elements";
 import firebase from "firebase";
 import AppHeader from "../components/AppHeader";
+import SwipableFlatlist from "../components/SwipableFlatlist";
 
 import db from "../config";
 
@@ -73,11 +74,7 @@ export default class NotificationScreen extends Component {
               <Text style={{ fontSize: 25 }}>You have no notifications</Text>
             </View>
           ) : (
-            <FlatList
-              keyExtractor={this.keyExtractor}
-              data={this.state.allNotifications}
-              renderItem={this.renderItem}
-            />
+            <SwipableFlatlist allNotifications={this.state.allNotifications} />
           )}
         </View>
       </View>
