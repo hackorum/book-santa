@@ -36,11 +36,9 @@ export default class NotificationScreen extends Component {
   componentDidMount() {
     this.getNotifications();
   }
-
   componentWillUnmount() {
     this.notificationRef();
   }
-
   keyExtractor = (item, index) => index.toString();
   renderItem = ({ item, index }) => {
     return (
