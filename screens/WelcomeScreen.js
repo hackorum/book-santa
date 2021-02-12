@@ -52,6 +52,7 @@ export default class WelcomeScreen extends Component {
             email: this.state.email.toLowerCase(),
             age: this.state.age,
             password: this.state.password,
+            isBookRequestActive: false,
           });
           return Alert.alert("User Has Been Added", "", [
             {
