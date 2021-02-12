@@ -23,7 +23,6 @@ export default class ReceiverDetailsScreen extends Component {
     };
   }
   getReceiverDetails = async () => {
-    console.log(this.props.navigation.getParam("details"), this.state);
     await db
       .collection("users")
       .where("email", "==", this.state.receiverId)

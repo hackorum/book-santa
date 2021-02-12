@@ -28,7 +28,6 @@ export default class MyDonationScreen extends Component {
       .get()
       .then((snapshot) => {
         snapshot.forEach((doc) => {
-          console.log(doc.data());
           this.setState({
             donorName: doc.data().firstName + " " + doc.data().lastName,
           });
@@ -101,7 +100,6 @@ export default class MyDonationScreen extends Component {
   componentDidMount() {
     this.getAllDonations();
     this.getDonorDetails(this.state.uid);
-    console.log(firebase.auth().currentUser);
   }
   componentWillUnmount() {
     this.requestRef();

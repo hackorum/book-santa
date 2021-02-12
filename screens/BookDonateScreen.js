@@ -27,7 +27,6 @@ export default class BookDonateScreen extends Component {
         let requestedBooksList = snapshot.docs.map((document) =>
           document.data()
         );
-        console.log(requestedBooksList);
         this.setState({
           requestedBooksList: requestedBooksList,
         });

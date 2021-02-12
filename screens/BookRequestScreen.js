@@ -34,7 +34,6 @@ export default class BookRequestScreen extends React.Component {
       .then((response) => {
         response.forEach((doc) => {
           let data = doc.data();
-          console.log(data);
           if (data.book_status !== "received") {
             this.setState({
               requestId: data.request_id,
@@ -101,7 +100,6 @@ export default class BookRequestScreen extends React.Component {
       });
   }
   addRequest = async (bookName, reason) => {
-    console.log(firebase.auth().currentUser);
     let uid = this.state.uid;
     let randomRequestId = Math.random().toString(36).substring(7);
 

@@ -29,7 +29,6 @@ export default class SwipableFlatlist extends Component {
     });
   };
   renderItem = (data) => {
-    console.log(data);
     return (
       <Animated.View>
         <ListItem bottomDivider>

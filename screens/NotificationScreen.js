@@ -26,7 +26,6 @@ export default class NotificationScreen extends Component {
         snapshot.docs.map((doc) => {
           let notification = doc.data();
           notification["doc_id"] = doc.id;
-          console.log(notification);
           allNotifications.push(notification);
         });
         this.setState({
