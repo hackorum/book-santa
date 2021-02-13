@@ -5,6 +5,7 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { ListItem } from "react-native-elements";
 import firebase from "firebase";
@@ -47,6 +48,10 @@ export default class BookDonateScreen extends Component {
     return (
       <ListItem key={i} bottomDivider>
         <ListItem.Content>
+          <Image
+            style={{ height: 50, width: 50 }}
+            source={{ uri: item.image_link }}
+          />
           <ListItem.Title style={{ color: "black", fontWeight: "bold" }}>
             {item.book_name}
           </ListItem.Title>

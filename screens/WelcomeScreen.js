@@ -34,6 +34,7 @@ export default class WelcomeScreen extends Component {
       })
       .catch(function (error) {
         Alert.alert("Error" + error.message);
+        console.log(error);
       });
   };
   userSignup = (email, password, confirmPassword) => {

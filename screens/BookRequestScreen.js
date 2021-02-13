@@ -9,10 +9,13 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Alert,
+  TouchableHighlight,
+  FlatList,
 } from "react-native";
 import * as firebase from "firebase";
 import db from "../config";
 import AppHeader from "../components/AppHeader";
+import { BookSearch } from "react-native-google-books";
 
 export default class BookRequestScreen extends React.Component {
   state = {
@@ -25,6 +28,9 @@ export default class BookRequestScreen extends React.Component {
     requestId: "",
     userDocId: "",
     docId: "",
+    imageLink: "",
+    dataSource: "",
+    showFlatlist: false,
   };
   getBookRequest = () => {
     let bookRequest = db
@@ -102,7 +108,10 @@ export default class BookRequestScreen extends React.Component {
   addRequest = async (bookName, reason) => {
     let uid = this.state.uid;
     let randomRequestId = Math.random().toString(36).substring(7);
-
+    let books = await BookSearch.searchbook(
+      bookName,
+      "AIzaSyC0IuLGYN3dgxC0fByTu0nCiqjVFragT-Y"
+    );
     db.collection("requested_books").add({
       user_id: uid,
       book_name: bookName,
@@ -110,6 +119,7 @@ export default class BookRequestScreen extends React.Component {
       request_id: randomRequestId,
       book_status: "requested",
       date: firebase.firestore.FieldValue.serverTimestamp(),
+      image_link: books.data[0].volumeInfo.imageLinks.smallThumbnail,
     });
     this.getBookRequest();
     db.collection("users")
@@ -144,6 +154,45 @@ export default class BookRequestScreen extends React.Component {
         });
       });
   };
+  async getBooksFromAPI(bookName) {
+    this.setState({
+      bookName: bookName,
+    });
+    if (bookName.length > 2) {
+      let books = await BookSearch.searchbook(
+        bookName,
+        "AIzaSyC0IuLGYN3dgxC0fByTu0nCiqjVFragT-Y"
+      );
+      console.log(books.data);
+      this.setState({
+        dataSource: books.data,
+        showFlatlist: true,
+      });
+    }
+  }
+  renderItem = ({ item, i }) => {
+    console.log(item);
+    return (
+      <View>
+        <TouchableHighlight
+          activeOpacity={0.6}
+          underlayColor="#dddddd"
+          onPress={() =>
+            this.setState({
+              showFlatlist: false,
+              bookName: item.volumeInfo.title,
+            })
+          }
+          style={styles.touchableHighlight}
+          bottomDivider
+        >
+          <Text>Book Name: {item.volumeInfo.title}</Text>
+        </TouchableHighlight>
+        <Image style={styles.image} source={{ uri: item.image_link }} />
+      </View>
+    );
+  };
+  keyExtractor = (item, index) => index.toString();
   componentDidMount() {
     this.getBookRequest();
     this.getIsBookRequestActive();
@@ -203,46 +252,95 @@ export default class BookRequestScreen extends React.Component {
       return (
         <View style={{ flex: 1 }}>
           <AppHeader title="Request Book" navigation={this.props.navigation} />
-          <ScrollView>
-            <KeyboardAvoidingView style={styles.keyBoardStyle}>
-              <TextInput
-                style={styles.formTextInput}
-                placeholder={"enter book name"}
-                onChangeText={(text) => {
-                  this.setState({
-                    bookName: text,
-                  });
-                }}
-                value={this.state.bookName}
+          <View>
+            <TextInput
+              style={styles.formTextInput}
+              placeholder={"Enter book name"}
+              onChangeText={(text) => {
+                this.getBooksFromAPI(text);
+              }}
+              value={this.state.bookName}
+            />
+            {this.state.showFlatlist ? (
+              <FlatList
+                data={this.state.dataSource}
+                renderItem={this.renderItem}
+                keyExtractor={this.keyExtractor}
+                style={{ marginTop: 10 }}
+                enableEmptySections
               />
-              <TextInput
-                style={[styles.formTextInput, { height: 300 }]}
-                multiline
-                numberOfLines={8}
-                placeholder={"Reason to Request"}
-                onChangeText={(text) => {
-                  this.setState({
-                    reason: text,
-                  });
-                }}
-                value={this.state.reason}
-              />
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => {
-                  this.addRequest(this.state.bookName, this.state.reason);
-                }}
-              >
-                <Text>Request</Text>
-              </TouchableOpacity>
-            </KeyboardAvoidingView>
-          </ScrollView>
+            ) : (
+              <View>
+                <TextInput
+                  style={[styles.formTextInput, { height: 300 }]}
+                  multiline
+                  numberOfLines={8}
+                  placeholder={"Reason to Request"}
+                  onChangeText={(text) => {
+                    this.setState({
+                      reason: text,
+                    });
+                  }}
+                  value={this.state.reason}
+                />
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => {
+                    if (
+                      this.state.bookName != "" &&
+                      this.state.reason.length > 5
+                    ) {
+                      this.addRequest(this.state.bookName, this.state.reason);
+                    } else {
+                      Alert.alert("Please Enter Details");
+                    }
+                  }}
+                >
+                  <Text>Request</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
         </View>
       );
     }
   }
 }
 
+// <ScrollView>
+//   <KeyboardAvoidingView style={styles.keyBoardStyle}>
+//     <TextInput
+//       style={styles.formTextInput}
+//       placeholder={"Enter book name"}
+//       onChangeText={(text) => {
+//         this.setState({
+//           bookName: text,
+//         });
+//       }}
+//       value={this.state.bookName}
+//     />
+//     <TextInput
+//       style={[styles.formTextInput, { height: 300 }]}
+//       multiline
+//       numberOfLines={8}
+//       placeholder={"Reason to Request"}
+//       onChangeText={(text) => {
+//         this.setState({
+//           reason: text,
+//         });
+//       }}
+//       value={this.state.reason}
+//     />
+//     <TouchableOpacity
+//       style={styles.button}
+//       onPress={() => {
+//         this.addRequest(this.state.bookName, this.state.reason);
+//       }}
+//     >
+//       <Text>Request</Text>
+//     </TouchableOpacity>
+//   </KeyboardAvoidingView>
+// </ScrollView>
 const styles = StyleSheet.create({
   keyBoardStyle: {
     flex: 1,
@@ -275,5 +373,15 @@ const styles = StyleSheet.create({
     shadowRadius: 10.32,
     elevation: 16,
     marginTop: 20,
+  },
+  touchableHighlight: {
+    alignItems: "center",
+    backgroundColor: "#ddd",
+    padding: 10,
+    width: "75%",
+  },
+  image: {
+    height: 50,
+    width: 50,
   },
 });
