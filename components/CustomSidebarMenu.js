@@ -14,8 +14,12 @@ export default class CustomSidebarMenu extends Component {
     docId: "",
   };
   logOut = () => {
-    firebase.auth().signOut();
-    this.props.navigation.navigate("WelcomeScreen");
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        this.props.navigation.navigate("WelcomeScreen");
+      });
   };
   fetchImage = (uid) => {
     let storage = firebase
